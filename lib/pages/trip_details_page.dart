@@ -1,0 +1,143 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_travel_app/gen/assets.gen.dart';
+
+class TripDetailsPage extends StatelessWidget {
+  const TripDetailsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const TripDetailsBody();
+  }
+}
+
+class TripDetailsBody extends StatefulWidget {
+  const TripDetailsBody({super.key});
+
+  @override
+  State<TripDetailsBody> createState() => _TripDetailsBodyState();
+}
+
+class _TripDetailsBodyState extends State<TripDetailsBody>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController;
+  late final PageController _pageController;
+  double offset = 0;
+  late final Animation<double> _sizeXAnimation;
+  late final Animation<double> _sizeYAnimation;
+
+  @override
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+
+    _animationController.addStatusListener((status) async {
+      if (status == AnimationStatus.completed) {
+        Navigator.pop(context);
+      }
+    });
+    _pageController = PageController();
+    _pageController.addListener(() {
+      final screenHeight = MediaQuery.of(context).size.height;
+      setState(() {
+        offset = _pageController.offset / screenHeight;
+      });
+    });
+
+    _sizeXAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(_animationController);
+
+    _sizeYAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.9,
+    ).animate(_animationController);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<OverscrollNotification>(
+      onNotification: (overscroll) {
+        if (overscroll.overscroll < 0.5 &&
+            overscroll.dragDetails != null &&
+            overscroll.metrics.axisDirection == AxisDirection.down) {
+          if (!_animationController.isAnimating) {
+            _animationController.forward();
+          }
+        }
+        return true;
+      },
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return Transform.scale(
+            scaleX: _sizeXAnimation.value,
+            scaleY: _sizeYAnimation.value,
+            child: Scaffold(
+              appBar: _buildAppBar(context),
+              extendBodyBehindAppBar: true,
+              body: Stack(children: [_buildBackground()]),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  AppBar _buildAppBar(BuildContext context) {
+    return AppBar(
+      elevation: 0,
+      forceMaterialTransparency: true,
+      leading: IconButton(
+        onPressed: () => Navigator.of(context).pop(),
+        style: IconButton.styleFrom(
+          backgroundColor:
+              Color.lerp(
+                Colors.white,
+                Colors.black.withAlpha(64),
+                1 - offset,
+              ) ??
+              Colors.transparent,
+        ),
+        icon: Icon(
+          Icons.close,
+          color: Color.lerp(Colors.white, Colors.black, offset),
+        ),
+      ),
+      actions: [
+        Opacity(
+          opacity: offset,
+          child: IconButton(
+            icon: CircleAvatar(
+              backgroundImage: AssetImage(Assets.images.ellipse36.path),
+            ),
+            onPressed: () {},
+          ),
+        ),
+      ],
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  Positioned _buildBackground() {
+    return Positioned.fill(
+      child: Hero(
+        tag: 'bg',
+        child: Opacity(
+          opacity: 1 - ((offset >= 0.0 && offset <= 1.0) ? offset : 0),
+          child: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(Assets.images.pexelsTraceHudson2724664.path),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
