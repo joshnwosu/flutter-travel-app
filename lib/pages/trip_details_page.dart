@@ -79,7 +79,7 @@ class _TripDetailsBodyState extends State<TripDetailsBody>
             child: Scaffold(
               appBar: _buildAppBar(context),
               extendBodyBehindAppBar: true,
-              body: Stack(children: [_buildBackground()]),
+              body: Stack(children: [_buildBackground(), _buildHeader()]),
             ),
           );
         },
@@ -119,6 +119,115 @@ class _TripDetailsBodyState extends State<TripDetailsBody>
         ),
       ],
       backgroundColor: Colors.transparent,
+    );
+  }
+
+  Widget _buildHeader() {
+    return Align(
+      alignment: FractionalOffset(0, 1 - (offset)),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Hero(
+                    tag: 'date',
+                    child: Opacity(
+                      opacity: 1 - offset,
+                      child: Text(
+                        'May 5-15',
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          color: Color.lerp(Colors.white, Colors.black, offset),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FractionallySizedBox(
+                    widthFactor: 0.7,
+                    child: Hero(
+                      tag: 'title',
+                      child: Text(
+                        'Riding through the lands of the legends',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color: Color.lerp(Colors.white, Colors.black, offset),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _buildUserChips(),
+              const SizedBox(height: 48),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Wrap _buildUserChips() {
+    return Wrap(
+      children:
+          [
+                (name: "Anne", imagePath: Assets.images.ellipse36.path),
+                (name: "Mike", imagePath: Assets.images.ellipse39.path),
+                (name: "Sophia", imagePath: Assets.images.ellipse37.path),
+              ]
+              .map(
+                (e) => Container(
+                  margin: const EdgeInsets.only(right: 4),
+                  child: Hero(
+                    tag: e.imagePath,
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: Chip(
+                        backgroundColor: Color.lerp(
+                          Colors.white,
+                          Colors.grey[800],
+                          1 - offset,
+                        ),
+                        // shape: const StadiumBorder(side: BorderSide()),
+                        side: BorderSide(
+                          color:
+                              Color.lerp(
+                                Colors.transparent,
+                                Colors.black26,
+                                offset,
+                              ) ??
+                              Colors.transparent,
+                        ),
+                        label: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            e.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Color.lerp(
+                                Colors.white,
+                                Colors.black,
+                                offset,
+                              ),
+                            ),
+                          ),
+                        ),
+                        avatar: CircleAvatar(
+                          backgroundImage: AssetImage(e.imagePath),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
     );
   }
 

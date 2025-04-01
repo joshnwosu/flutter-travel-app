@@ -104,6 +104,8 @@ class HomeBody extends StatelessWidget {
     Navigator.push(
       context,
       PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 500),
+        reverseTransitionDuration: const Duration(milliseconds: 500),
         pageBuilder: (
           BuildContext context,
           Animation<double> animation,
@@ -111,6 +113,15 @@ class HomeBody extends StatelessWidget {
         ) {
           return const TripDetailsPage();
         },
+        transitionsBuilder: (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+          Widget child,
+        ) {
+          return Align(child: FadeTransition(opacity: animation, child: child));
+        },
+        opaque: false,
       ),
     );
   }
