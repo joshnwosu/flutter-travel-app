@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_travel_app/gen/assets.gen.dart';
+import 'package:flutter_travel_app/widgets/trip_details_preview_item.dart';
 
 class TripDetailsPage extends StatelessWidget {
   const TripDetailsPage({super.key});
@@ -79,7 +80,20 @@ class _TripDetailsBodyState extends State<TripDetailsBody>
             child: Scaffold(
               appBar: _buildAppBar(context),
               extendBodyBehindAppBar: true,
-              body: Stack(children: [_buildBackground(), _buildHeader()]),
+              body: Stack(
+                children: [
+                  _buildBackground(),
+                  _buildHeader(),
+                  PageView(
+                    scrollDirection: Axis.vertical,
+                    controller: _pageController,
+                    children: [
+                      const SizedBox.shrink(),
+                      TripDetailsPageViewItem(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         },
